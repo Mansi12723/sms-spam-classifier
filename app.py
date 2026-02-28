@@ -2,83 +2,107 @@ import streamlit as st
 import pickle
 import nltk
 import string
+import time
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(
-    page_title="SecureMail AI",
-    page_icon="🚀",
+    page_title="SecureMail",
+    page_icon="🔐",
     layout="wide"
 )
 
-# ---------------- CUSTOM CSS ----------------
+# ---------------- ADVANCED CSS ----------------
 st.markdown("""
 <style>
 
-/* Background */
+/* Animated Background */
 body {
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    background: linear-gradient(-45deg, #141e30, #243b55, #1c92d2, #f2fcfe);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
 }
 
 /* Navbar */
 .navbar {
-    background-color: rgba(255,255,255,0.08);
-    padding: 15px 40px;
-    border-radius: 10px;
-    margin-bottom: 30px;
+    padding: 20px 50px;
     display: flex;
     justify-content: space-between;
     color: white;
-    font-weight: 600;
+    font-weight: bold;
+    font-size: 20px;
 }
 
 /* Hero Section */
 .hero-title {
     text-align: center;
-    font-size: 50px;
-    font-weight: 800;
+    font-size: 65px;
+    font-weight: 900;
     color: white;
+    animation: fadeIn 2s ease-in;
 }
 
 .hero-subtitle {
     text-align: center;
-    font-size: 20px;
-    color: #d1d5db;
-    margin-bottom: 40px;
+    font-size: 22px;
+    color: #f1f1f1;
+    margin-bottom: 60px;
+    animation: fadeIn 3s ease-in;
 }
 
-/* Card */
+/* Glass Card */
 .card {
-    background: white;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(18px);
+    padding: 45px;
+    border-radius: 25px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+    animation: fadeIn 2s ease-in;
 }
 
-/* Button */
+/* Fade Animation */
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(25px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* Text Area */
+.stTextArea textarea {
+    border-radius: 15px;
+    border: none;
+    padding: 15px;
+}
+
+/* Animated Button */
 .stButton>button {
-    background: linear-gradient(90deg, #ff512f, #dd2476);
+    background: linear-gradient(90deg, #ff4b2b, #ff416c);
     color: white;
     font-size: 18px;
     font-weight: bold;
-    border-radius: 12px;
+    border-radius: 15px;
     height: 3em;
     width: 100%;
     border: none;
+    transition: 0.3s;
 }
 
-/* Textarea */
-.stTextArea textarea {
-    border-radius: 12px;
-    border: 2px solid #ddd;
+.stButton>button:hover {
+    transform: scale(1.07);
+    box-shadow: 0 0 25px #ff416c;
 }
 
 /* Footer */
 .footer {
     text-align: center;
-    color: #d1d5db;
-    margin-top: 50px;
+    color: white;
+    margin-top: 70px;
     font-size: 14px;
 }
 
@@ -88,16 +112,16 @@ body {
 # ---------------- NAVBAR ----------------
 st.markdown("""
 <div class="navbar">
-<div>🚀 SecureMail AI</div>
-<div>Home | Services | About | Contact</div>
+<div>🔐 SecureMail</div>
+<div>Home | Security | Solutions | Contact</div>
 </div>
 """, unsafe_allow_html=True)
 
-# ---------------- HERO SECTION ----------------
-st.markdown('<p class="hero-title">Enterprise Email Security</p>', unsafe_allow_html=True)
-st.markdown('<p class="hero-subtitle">AI-Powered Spam Detection for Modern Businesses</p>', unsafe_allow_html=True)
+# ---------------- HERO ----------------
+st.markdown('<div class="hero-title">Enterprise Email Protection</div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-subtitle">Advanced Spam Detection & Email Security Platform</div>', unsafe_allow_html=True)
 
-# ---------------- NLTK SETUP ----------------
+# ---------------- NLTK ----------------
 nltk.download('punkt')
 nltk.download('stopwords')
 
@@ -131,33 +155,36 @@ def transform_text(text):
 tfidf = pickle.load(open('vectorizer.pkl', 'rb'))
 model = pickle.load(open('model.pkl', 'rb'))
 
-# ---------------- MAIN SECTION ----------------
+# ---------------- CENTER SECTION ----------------
 col1, col2, col3 = st.columns([1,2,1])
 
 with col2:
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
-    st.subheader("Analyze Your Email")
+    st.subheader("🔎 Email Security Scanner")
 
-    input_text = st.text_area("Paste email content below:", height=200)
+    input_text = st.text_area("Paste email content here:", height=200)
 
-    if st.button("🔎 Run AI Scan"):
+    if st.button("🚀 Scan Email"):
         if input_text.strip() == "":
             st.warning("Please enter email content.")
         else:
+            with st.spinner("Scanning email..."):
+                time.sleep(2)
+
             transformed = transform_text(input_text)
             vector_input = tfidf.transform([transformed])
             result = model.predict(vector_input)[0]
+            confidence = round(model.predict_proba(vector_input)[0].max() * 100, 2)
 
-            st.write("")
             st.markdown("### Scan Result")
 
             if result == 1:
-                st.error("⚠️ Threat Detected: This email is SPAM.")
+                st.error(f"⚠️ Spam Detected (Confidence: {confidence}%)")
             else:
-                st.success("✅ Secure: This email is safe.")
+                st.success(f"✅ Email is Safe (Confidence: {confidence}%)")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------- FOOTER ----------------
-st.markdown('<div class="footer">© 2026 SecureMail AI Technologies | Privacy Policy | Terms of Service</div>', unsafe_allow_html=True)
+st.markdown('<div class="footer">© 2026 SecureMail | Enterprise Cybersecurity Solutions</div>', unsafe_allow_html=True)
