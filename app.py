@@ -9,22 +9,22 @@ from nltk.stem.porter import PorterStemmer
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(
     page_title="SecureMail",
-    page_icon="🔐",
+    page_icon="🌈",
     layout="wide"
 )
 
-# ---------------- ADVANCED CSS ----------------
+# ---------------- FULL COLOR CSS ----------------
 st.markdown("""
 <style>
 
-/* Animated Background */
+/* Animated Rainbow Background */
 body {
-    background: linear-gradient(-45deg, #141e30, #243b55, #1c92d2, #f2fcfe);
+    background: linear-gradient(-45deg, #ff0080, #7928ca, #2af598, #009efd);
     background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
+    animation: gradient 12s ease infinite;
 }
 
-@keyframes gradientBG {
+@keyframes gradient {
     0% {background-position: 0% 50%;}
     50% {background-position: 100% 50%;}
     100% {background-position: 0% 50%;}
@@ -36,74 +36,67 @@ body {
     display: flex;
     justify-content: space-between;
     color: white;
+    font-size: 22px;
     font-weight: bold;
-    font-size: 20px;
 }
 
-/* Hero Section */
+/* Hero */
 .hero-title {
     text-align: center;
-    font-size: 65px;
+    font-size: 70px;
     font-weight: 900;
-    color: white;
-    animation: fadeIn 2s ease-in;
+    color: #ffffff;
+    text-shadow: 0 0 20px #fff;
 }
 
 .hero-subtitle {
     text-align: center;
-    font-size: 22px;
-    color: #f1f1f1;
+    font-size: 24px;
+    color: #f0f0f0;
     margin-bottom: 60px;
-    animation: fadeIn 3s ease-in;
 }
 
-/* Glass Card */
+/* Colorful Glass Card */
 .card {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(18px);
-    padding: 45px;
-    border-radius: 25px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.35);
-    animation: fadeIn 2s ease-in;
-}
-
-/* Fade Animation */
-@keyframes fadeIn {
-    from {opacity: 0; transform: translateY(25px);}
-    to {opacity: 1; transform: translateY(0);}
+    background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.15));
+    backdrop-filter: blur(20px);
+    padding: 50px;
+    border-radius: 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    border: 2px solid rgba(255,255,255,0.3);
 }
 
 /* Text Area */
 .stTextArea textarea {
     border-radius: 15px;
-    border: none;
     padding: 15px;
+    border: none;
 }
 
-/* Animated Button */
+/* Neon Button */
 .stButton>button {
-    background: linear-gradient(90deg, #ff4b2b, #ff416c);
+    background: linear-gradient(90deg, #00f2fe, #4facfe);
     color: white;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
-    border-radius: 15px;
-    height: 3em;
+    border-radius: 20px;
+    height: 3.5em;
     width: 100%;
     border: none;
     transition: 0.3s;
 }
 
 .stButton>button:hover {
-    transform: scale(1.07);
-    box-shadow: 0 0 25px #ff416c;
+    transform: scale(1.08);
+    box-shadow: 0 0 30px #00f2fe;
 }
 
 /* Footer */
 .footer {
     text-align: center;
     color: white;
-    margin-top: 70px;
-    font-size: 14px;
+    margin-top: 80px;
+    font-size: 16px;
 }
 
 </style>
@@ -112,14 +105,14 @@ body {
 # ---------------- NAVBAR ----------------
 st.markdown("""
 <div class="navbar">
-<div>🔐 SecureMail</div>
-<div>Home | Security | Solutions | Contact</div>
+<div>🌈 SecureMail</div>
+<div>Home | Features | Solutions | Contact</div>
 </div>
 """, unsafe_allow_html=True)
 
 # ---------------- HERO ----------------
-st.markdown('<div class="hero-title">Enterprise Email Protection</div>', unsafe_allow_html=True)
-st.markdown('<div class="hero-subtitle">Advanced Spam Detection & Email Security Platform</div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-title">Colorful Email Protection</div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-subtitle">Powerful Spam Detection Platform</div>', unsafe_allow_html=True)
 
 # ---------------- NLTK ----------------
 nltk.download('punkt')
@@ -161,15 +154,15 @@ col1, col2, col3 = st.columns([1,2,1])
 with col2:
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
-    st.subheader("🔎 Email Security Scanner")
+    st.subheader("🔍 Scan Your Email")
 
-    input_text = st.text_area("Paste email content here:", height=200)
+    input_text = st.text_area("Paste your email content:", height=220)
 
-    if st.button("🚀 Scan Email"):
+    if st.button("🚀 Scan Now"):
         if input_text.strip() == "":
             st.warning("Please enter email content.")
         else:
-            with st.spinner("Scanning email..."):
+            with st.spinner("Scanning..."):
                 time.sleep(2)
 
             transformed = transform_text(input_text)
@@ -177,14 +170,14 @@ with col2:
             result = model.predict(vector_input)[0]
             confidence = round(model.predict_proba(vector_input)[0].max() * 100, 2)
 
-            st.markdown("### Scan Result")
+            st.markdown("### 🎯 Result")
 
             if result == 1:
-                st.error(f"⚠️ Spam Detected (Confidence: {confidence}%)")
+                st.error(f"🚨 Spam Detected | Confidence: {confidence}%")
             else:
-                st.success(f"✅ Email is Safe (Confidence: {confidence}%)")
+                st.success(f"✅ Safe Email | Confidence: {confidence}%")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------- FOOTER ----------------
-st.markdown('<div class="footer">© 2026 SecureMail | Enterprise Cybersecurity Solutions</div>', unsafe_allow_html=True)
+st.markdown('<div class="footer">© 2026 SecureMail | Modern Cybersecurity Platform</div>', unsafe_allow_html=True)
