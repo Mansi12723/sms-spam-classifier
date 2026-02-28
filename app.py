@@ -5,82 +5,104 @@ import string
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 
-# -------------------- PAGE CONFIG --------------------
+# ---------------- PAGE CONFIG ----------------
 st.set_page_config(
-    page_title="SecureMail - Email Classifier",
-    page_icon="📧",
-    layout="centered"
+    page_title="SecureMail AI",
+    page_icon="🚀",
+    layout="wide"
 )
 
-# -------------------- PROFESSIONAL CSS --------------------
+# ---------------- CUSTOM CSS ----------------
 st.markdown("""
 <style>
 
+/* Background */
 body {
-    background: linear-gradient(135deg, #1f2937, #111827);
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
 }
 
-.main {
-    background-color: transparent;
+/* Navbar */
+.navbar {
+    background-color: rgba(255,255,255,0.08);
+    padding: 15px 40px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    font-weight: 600;
 }
 
-.company-title {
+/* Hero Section */
+.hero-title {
     text-align: center;
-    font-size: 45px;
-    font-weight: 700;
+    font-size: 50px;
+    font-weight: 800;
     color: white;
 }
 
-.tagline {
+.hero-subtitle {
     text-align: center;
-    font-size: 18px;
+    font-size: 20px;
     color: #d1d5db;
     margin-bottom: 40px;
 }
 
+/* Card */
 .card {
-    background-color: white;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0px 8px 25px rgba(0,0,0,0.3);
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
 }
 
-.stTextArea textarea {
-    border-radius: 10px;
-}
-
+/* Button */
 .stButton>button {
-    background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    background: linear-gradient(90deg, #ff512f, #dd2476);
     color: white;
     font-size: 18px;
-    font-weight: 600;
-    border-radius: 8px;
+    font-weight: bold;
+    border-radius: 12px;
     height: 3em;
     width: 100%;
     border: none;
 }
 
+/* Textarea */
+.stTextArea textarea {
+    border-radius: 12px;
+    border: 2px solid #ddd;
+}
+
+/* Footer */
 .footer {
     text-align: center;
+    color: #d1d5db;
+    margin-top: 50px;
     font-size: 14px;
-    color: #9ca3af;
-    margin-top: 40px;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# -------------------- HEADER --------------------
-st.markdown('<p class="company-title">SecureMail</p>', unsafe_allow_html=True)
-st.markdown('<p class="tagline">AI Powered Email Spam Detection System</p>', unsafe_allow_html=True)
+# ---------------- NAVBAR ----------------
+st.markdown("""
+<div class="navbar">
+<div>🚀 SecureMail AI</div>
+<div>Home | Services | About | Contact</div>
+</div>
+""", unsafe_allow_html=True)
 
-# -------------------- NLTK --------------------
+# ---------------- HERO SECTION ----------------
+st.markdown('<p class="hero-title">Enterprise Email Security</p>', unsafe_allow_html=True)
+st.markdown('<p class="hero-subtitle">AI-Powered Spam Detection for Modern Businesses</p>', unsafe_allow_html=True)
+
+# ---------------- NLTK SETUP ----------------
 nltk.download('punkt')
 nltk.download('stopwords')
 
 ps = PorterStemmer()
 
-# -------------------- TEXT CLEANING --------------------
 def transform_text(text):
     text = text.lower()
     text = nltk.word_tokenize(text)
@@ -105,33 +127,37 @@ def transform_text(text):
 
     return " ".join(y)
 
-# -------------------- LOAD MODEL --------------------
+# ---------------- LOAD MODEL ----------------
 tfidf = pickle.load(open('vectorizer.pkl', 'rb'))
 model = pickle.load(open('model.pkl', 'rb'))
 
-# -------------------- MAIN CARD --------------------
-with st.container():
+# ---------------- MAIN SECTION ----------------
+col1, col2, col3 = st.columns([1,2,1])
+
+with col2:
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
-    input_text = st.text_area("Enter Email Content:", height=150)
+    st.subheader("Analyze Your Email")
 
-    if st.button("Analyze Email"):
+    input_text = st.text_area("Paste email content below:", height=200)
+
+    if st.button("🔎 Run AI Scan"):
         if input_text.strip() == "":
             st.warning("Please enter email content.")
         else:
-            transformed_sms = transform_text(input_text)
-            vector_input = tfidf.transform([transformed_sms])
+            transformed = transform_text(input_text)
+            vector_input = tfidf.transform([transformed])
             result = model.predict(vector_input)[0]
 
             st.write("")
-            st.write("### Analysis Result")
+            st.markdown("### Scan Result")
 
             if result == 1:
-                st.error("⚠️ This email is classified as SPAM.")
+                st.error("⚠️ Threat Detected: This email is SPAM.")
             else:
-                st.success("✔ This email is SAFE.")
+                st.success("✅ Secure: This email is safe.")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-# -------------------- FOOTER --------------------
-st.markdown('<p class="footer">© 2026 SecureMail Technologies | All Rights Reserved</p>', unsafe_allow_html=True)
+# ---------------- FOOTER ----------------
+st.markdown('<div class="footer">© 2026 SecureMail AI Technologies | Privacy Policy | Terms of Service</div>', unsafe_allow_html=True)
