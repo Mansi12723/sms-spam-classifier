@@ -13,14 +13,19 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------------- PROFESSIONAL CORPORATE CSS ----------------
+# ---------------- FULL PAGE BACKGROUND FIX ----------------
 st.markdown("""
 <style>
 
-/* Page Background */
-body {
-    background-color: #0f172a;
+/* Apply background to full Streamlit app */
+.stApp {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
 }
+
+/* Remove default Streamlit header & footer */
+header {visibility: hidden;}
+footer {visibility: hidden;}
 
 /* Navbar */
 .navbar {
@@ -49,11 +54,11 @@ body {
 
 .hero-subtitle {
     font-size: 20px;
-    color: #94a3b8;
+    color: #cbd5e1;
     margin-top: 10px;
 }
 
-/* Main Card */
+/* Card */
 .card {
     background: #1e293b;
     padding: 45px;
@@ -62,7 +67,7 @@ body {
     border: 1px solid #334155;
 }
 
-/* Input */
+/* Text Area */
 .stTextArea textarea {
     border-radius: 12px;
     padding: 15px;
@@ -110,8 +115,8 @@ st.markdown("""
 # ---------------- HERO ----------------
 st.markdown("""
 <div class="hero">
-<div class="hero-title">Enterprise Email Security Platform</div>
-<div class="hero-subtitle">Advanced spam detection and email protection system</div>
+<div class="hero-title">Enterprise Email Security</div>
+<div class="hero-subtitle">Advanced spam detection and protection system</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -183,6 +188,6 @@ with col2:
 # ---------------- FOOTER ----------------
 st.markdown("""
 <div class="footer">
-© 2026 SecureMail Technologies | Privacy Policy | Terms of Service
+© 2026 SecureMail Technologies | Privacy Policy | Terms
 </div>
 """, unsafe_allow_html=True)
