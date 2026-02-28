@@ -1,24 +1,86 @@
 import streamlit as st
 import pickle
-import string
 import nltk
-import os
+import string
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 
-# ---- FIX FOR STREAMLIT CLOUD ----
-nltk_data_path = os.path.join(os.getcwd(), "nltk_data")
-if not os.path.exists(nltk_data_path):
-    os.makedirs(nltk_data_path)
+# -------------------- PAGE CONFIG --------------------
+st.set_page_config(
+    page_title="SecureMail - Email Classifier",
+    page_icon="📧",
+    layout="centered"
+)
 
-nltk.data.path.append(nltk_data_path)
+# -------------------- PROFESSIONAL CSS --------------------
+st.markdown("""
+<style>
 
-nltk.download('punkt', download_dir=nltk_data_path)
-nltk.download('stopwords', download_dir=nltk_data_path)
-# ----------------------------------
+body {
+    background: linear-gradient(135deg, #1f2937, #111827);
+}
+
+.main {
+    background-color: transparent;
+}
+
+.company-title {
+    text-align: center;
+    font-size: 45px;
+    font-weight: 700;
+    color: white;
+}
+
+.tagline {
+    text-align: center;
+    font-size: 18px;
+    color: #d1d5db;
+    margin-bottom: 40px;
+}
+
+.card {
+    background-color: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0px 8px 25px rgba(0,0,0,0.3);
+}
+
+.stTextArea textarea {
+    border-radius: 10px;
+}
+
+.stButton>button {
+    background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 8px;
+    height: 3em;
+    width: 100%;
+    border: none;
+}
+
+.footer {
+    text-align: center;
+    font-size: 14px;
+    color: #9ca3af;
+    margin-top: 40px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# -------------------- HEADER --------------------
+st.markdown('<p class="company-title">SecureMail</p>', unsafe_allow_html=True)
+st.markdown('<p class="tagline">AI Powered Email Spam Detection System</p>', unsafe_allow_html=True)
+
+# -------------------- NLTK --------------------
+nltk.download('punkt')
+nltk.download('stopwords')
 
 ps = PorterStemmer()
 
+# -------------------- TEXT CLEANING --------------------
 def transform_text(text):
     text = text.lower()
     text = nltk.word_tokenize(text)
@@ -31,10 +93,8 @@ def transform_text(text):
     text = y[:]
     y.clear()
 
-    stop_words = set(stopwords.words('english'))
-
     for i in text:
-        if i not in stop_words and i not in string.punctuation:
+        if i not in stopwords.words('english') and i not in string.punctuation:
             y.append(i)
 
     text = y[:]
@@ -45,23 +105,33 @@ def transform_text(text):
 
     return " ".join(y)
 
+# -------------------- LOAD MODEL --------------------
+tfidf = pickle.load(open('vectorizer.pkl', 'rb'))
+model = pickle.load(open('model.pkl', 'rb'))
 
-# Load vectorizer and model
-tfidf = pickle.load(open('vectorizer.pkl','rb'))
-model = pickle.load(open('model.pkl','rb'))
+# -------------------- MAIN CARD --------------------
+with st.container():
+    st.markdown('<div class="card">', unsafe_allow_html=True)
 
-# UI
-st.title("Email Spam Classifier")
+    input_text = st.text_area("Enter Email Content:", height=150)
 
-input_sms = st.text_area("Enter the message")
+    if st.button("Analyze Email"):
+        if input_text.strip() == "":
+            st.warning("Please enter email content.")
+        else:
+            transformed_sms = transform_text(input_text)
+            vector_input = tfidf.transform([transformed_sms])
+            result = model.predict(vector_input)[0]
 
-if st.button('Predict'):
-    transformed_sms = transform_text(input_sms)
-    vector_input = tfidf.transform([transformed_sms])
-    result = model.predict(vector_input)[0]
+            st.write("")
+            st.write("### Analysis Result")
 
-    if result == 1:
-        st.header("Spam")
-    else:
-        st.header("Not Spam")
+            if result == 1:
+                st.error("⚠️ This email is classified as SPAM.")
+            else:
+                st.success("✔ This email is SAFE.")
 
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# -------------------- FOOTER --------------------
+st.markdown('<p class="footer">© 2026 SecureMail Technologies | All Rights Reserved</p>', unsafe_allow_html=True)
