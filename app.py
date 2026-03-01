@@ -2,16 +2,134 @@ import streamlit as st
 import pickle
 import nltk
 import string
+import time
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 
-# Download required NLTK data
+# ---------------- PAGE CONFIG ----------------
+st.set_page_config(
+    page_title="SecureMail",
+    page_icon="🟣",
+    layout="wide"
+)
+
+# ---------------- PURPLE THEME CSS ----------------
+st.markdown("""
+<style>
+
+/* Full Page Purple Gradient Background */
+.stApp {
+    background: linear-gradient(135deg, #1a0b2e, #2e1065, #4c1d95);
+    color: white;
+}
+
+/* Hide default Streamlit header/footer */
+header {visibility: hidden;}
+footer {visibility: hidden;}
+
+/* Navbar */
+.navbar {
+    background: rgba(255,255,255,0.08);
+    padding: 18px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 70px 20px;
+}
+
+.hero-title {
+    font-size: 58px;
+    font-weight: 900;
+    background: linear-gradient(90deg, #c084fc, #f0abfc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+    font-size: 20px;
+    color: #ddd6fe;
+    margin-top: 10px;
+}
+
+/* Card */
+.card {
+    background: rgba(255,255,255,0.08);
+    padding: 45px;
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* Text Area */
+.stTextArea textarea {
+    border-radius: 12px;
+    padding: 15px;
+    background-color: rgba(0,0,0,0.3);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* Button */
+.stButton>button {
+    background: linear-gradient(90deg, #7c3aed, #a855f7);
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 12px;
+    height: 3em;
+    width: 100%;
+    border: none;
+    transition: 0.3s;
+}
+
+.stButton>button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #c084fc;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    color: #c4b5fd;
+    margin-top: 80px;
+    font-size: 14px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# ---------------- NAVBAR ----------------
+st.markdown("""
+<div class="navbar">
+<div>🟣 SecureMail</div>
+<div>Home | Solutions | Enterprise | Contact</div>
+</div>
+""", unsafe_allow_html=True)
+
+# ---------------- HERO ----------------
+st.markdown("""
+<div class="hero">
+<div class="hero-title">Enterprise Email Protection</div>
+<div class="hero-subtitle">Powerful spam detection & secure communication</div>
+</div>
+""", unsafe_allow_html=True)
+
+# ---------------- NLTK ----------------
 nltk.download('punkt')
 nltk.download('stopwords')
 
 ps = PorterStemmer()
 
-# ---------------- TEXT PREPROCESS FUNCTION ----------------
 def transform_text(text):
     text = text.lower()
     text = nltk.word_tokenize(text)
@@ -36,84 +154,44 @@ def transform_text(text):
 
     return " ".join(y)
 
-# ---------------- LOAD MODEL & VECTORIZER ----------------
+# ---------------- LOAD MODEL ----------------
 tfidf = pickle.load(open('vectorizer.pkl', 'rb'))
 model = pickle.load(open('model.pkl', 'rb'))
 
-# ---------------- PAGE CONFIG ----------------
-st.set_page_config(page_title="Email Spam Filter", layout="wide")
+# ---------------- CENTER CONTENT ----------------
+col1, col2, col3 = st.columns([1,2,1])
 
-# ---------------- CUSTOM CSS ----------------
-st.markdown("""
-<style>
-body {
-    background: linear-gradient(135deg, #4b0082, #8a2be2);
-}
-.main {
-    background-color: rgba(255,255,255,0.05);
-}
-.big-title {
-    font-size: 48px;
-    font-weight: bold;
-    color: white;
-    text-align: center;
-}
-.subtitle {
-    font-size: 20px;
-    color: #e0d7ff;
-    text-align: center;
-    margin-bottom: 40px;
-}
-.result-box {
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
-}
-.spam {
-    background-color: #ff4b5c;
-    color: white;
-}
-.not-spam {
-    background-color: #00c897;
-    color: white;
-}
-.stButton>button {
-    background-color: #8a2be2;
-    color: white;
-    font-size: 18px;
-    border-radius: 10px;
-    padding: 10px 25px;
-}
-.stTextArea textarea {
-    border-radius: 10px;
-}
-</style>
-""", unsafe_allow_html=True)
+with col2:
+    st.markdown('<div class="card">', unsafe_allow_html=True)
 
-# ---------------- HEADER SECTION ----------------
-st.markdown('<div class="big-title">Email Spam Filter</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">This system intelligently analyzes email content and automatically classifies messages as spam or legitimate, similar to the spam filtering feature available in Gmail.</div>', unsafe_allow_html=True)
+    st.subheader("Scan Email")
 
-st.write("")
+    input_text = st.text_area("Paste email content below:", height=200)
 
-# ---------------- INPUT SECTION ----------------
-input_sms = st.text_area("Enter Email Content Below:", height=200)
-
-# ---------------- PREDICT BUTTON ----------------
-if st.button("Analyze Email"):
-
-    if input_sms.strip() == "":
-        st.warning("Please enter email content to analyze.")
-    else:
-        transformed_sms = transform_text(input_sms)
-        vector_input = tfidf.transform([transformed_sms])
-        result = model.predict(vector_input)[0]
-
-        st.write("")
-
-        if result == 1:
-            st.markdown('<div class="result-box spam">⚠ Spam Email Detected</div>', unsafe_allow_html=True)
+    if st.button("Analyze Email"):
+        if input_text.strip() == "":
+            st.warning("Please enter email content.")
         else:
-            st.markdown('<div class="result-box not-spam">✔ Legitimate Email</div>', unsafe_allow_html=True)
+            with st.spinner("Scanning email..."):
+                time.sleep(1.5)
+
+            transformed = transform_text(input_text)
+            vector_input = tfidf.transform([transformed])
+            result = model.predict(vector_input)[0]
+            confidence = round(model.predict_proba(vector_input)[0].max() * 100, 2)
+
+            st.markdown("### Result")
+
+            if result == 1:
+                st.error(f"Spam Detected (Confidence: {confidence}%)")
+            else:
+                st.success(f"Email is Safe (Confidence: {confidence}%)")
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# ---------------- FOOTER ----------------
+st.markdown("""
+<div class="footer">
+© 2026 SecureMail | Advanced Cyber Protection
+</div>
+""", unsafe_allow_html=True)
