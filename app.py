@@ -9,80 +9,83 @@ from nltk.stem.porter import PorterStemmer
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(
     page_title="SecureMail",
-    page_icon="🔐",
+    page_icon="🟣",
     layout="wide"
 )
 
-# ---------------- FULL PAGE BACKGROUND FIX ----------------
+# ---------------- PURPLE THEME CSS ----------------
 st.markdown("""
 <style>
 
-/* Apply background to full Streamlit app */
+/* Full Page Purple Gradient Background */
 .stApp {
-    background: linear-gradient(135deg, #0f172a, #1e293b);
+    background: linear-gradient(135deg, #1a0b2e, #2e1065, #4c1d95);
     color: white;
 }
 
-/* Remove default Streamlit header & footer */
+/* Hide default Streamlit header/footer */
 header {visibility: hidden;}
 footer {visibility: hidden;}
 
 /* Navbar */
 .navbar {
-    background: #1e293b;
+    background: rgba(255,255,255,0.08);
     padding: 18px 60px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: white;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
     font-size: 18px;
     font-weight: 600;
-    border-radius: 8px;
 }
 
 /* Hero Section */
 .hero {
     text-align: center;
-    padding: 60px 20px;
+    padding: 70px 20px;
 }
 
 .hero-title {
-    font-size: 55px;
-    font-weight: 800;
-    color: white;
+    font-size: 58px;
+    font-weight: 900;
+    background: linear-gradient(90deg, #c084fc, #f0abfc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .hero-subtitle {
     font-size: 20px;
-    color: #cbd5e1;
+    color: #ddd6fe;
     margin-top: 10px;
 }
 
 /* Card */
 .card {
-    background: #1e293b;
+    background: rgba(255,255,255,0.08);
     padding: 45px;
-    border-radius: 18px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-    border: 1px solid #334155;
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.15);
 }
 
 /* Text Area */
 .stTextArea textarea {
     border-radius: 12px;
     padding: 15px;
-    background-color: #0f172a;
+    background-color: rgba(0,0,0,0.3);
     color: white;
-    border: 1px solid #334155;
+    border: 1px solid rgba(255,255,255,0.2);
 }
 
 /* Button */
 .stButton>button {
-    background-color: #2563eb;
+    background: linear-gradient(90deg, #7c3aed, #a855f7);
     color: white;
     font-size: 18px;
     font-weight: 600;
-    border-radius: 10px;
+    border-radius: 12px;
     height: 3em;
     width: 100%;
     border: none;
@@ -90,13 +93,14 @@ footer {visibility: hidden;}
 }
 
 .stButton>button:hover {
-    background-color: #1d4ed8;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #c084fc;
 }
 
 /* Footer */
 .footer {
     text-align: center;
-    color: #94a3b8;
+    color: #c4b5fd;
     margin-top: 80px;
     font-size: 14px;
 }
@@ -107,7 +111,7 @@ footer {visibility: hidden;}
 # ---------------- NAVBAR ----------------
 st.markdown("""
 <div class="navbar">
-<div>🔐 SecureMail</div>
+<div>🟣 SecureMail</div>
 <div>Home | Solutions | Enterprise | Contact</div>
 </div>
 """, unsafe_allow_html=True)
@@ -115,8 +119,8 @@ st.markdown("""
 # ---------------- HERO ----------------
 st.markdown("""
 <div class="hero">
-<div class="hero-title">Enterprise Email Security</div>
-<div class="hero-subtitle">Advanced spam detection and protection system</div>
+<div class="hero-title">Enterprise Email Protection</div>
+<div class="hero-subtitle">Powerful spam detection & secure communication</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -188,6 +192,6 @@ with col2:
 # ---------------- FOOTER ----------------
 st.markdown("""
 <div class="footer">
-© 2026 SecureMail Technologies | Privacy Policy | Terms
+© 2026 SecureMail | Advanced Cyber Protection
 </div>
 """, unsafe_allow_html=True)
