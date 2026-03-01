@@ -7,58 +7,64 @@ from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 
 # ---------------- PAGE CONFIG ----------------
-st.set_page_config(
-    page_title="Email Spam Detection",
-    layout="wide"
-)
+st.set_page_config(page_title="Gmail Clone - Spam Detection", layout="wide")
 
-# ---------------- GMAIL STYLE CSS ----------------
+# ---------------- GMAIL CSS ----------------
 st.markdown("""
 <style>
 
-/* Hide Streamlit default header/footer */
+/* Hide default */
 header {visibility: hidden;}
 footer {visibility: hidden;}
 
-/* Page Background */
+/* Whole background */
 .stApp {
-    background-color: #f6f8fc;
+    background-color: #f1f3f4;
 }
 
-/* Top Header */
-.gmail-header {
-    background-color: white;
-    padding: 15px 25px;
-    font-size: 22px;
-    font-weight: bold;
+/* Top Navbar */
+.topbar {
+    background: #ffffff;
+    padding: 12px 20px;
     border-bottom: 1px solid #ddd;
+    font-size: 20px;
+    font-weight: 500;
 }
 
 /* Sidebar */
-.sidebar-box {
-    background-color: white;
+.sidebar {
+    background: #ffffff;
+    height: 100vh;
     padding: 15px;
     border-right: 1px solid #ddd;
-    height: 100vh;
 }
 
-/* Sidebar item */
+/* Compose Button */
+.compose-btn {
+    background: #c2e7ff;
+    padding: 10px;
+    border-radius: 20px;
+    text-align: center;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+/* Menu item */
 .menu-item {
     padding: 10px;
-    font-size: 16px;
+    font-size: 15px;
     cursor: pointer;
+    border-radius: 20px;
 }
 
 .menu-item:hover {
     background-color: #e8f0fe;
-    border-radius: 6px;
 }
 
-/* Email card */
-.email-card {
-    background-color: white;
+/* Email List */
+.email-row {
+    background: white;
     padding: 12px;
-    margin-bottom: 8px;
     border-bottom: 1px solid #eee;
 }
 
@@ -68,10 +74,9 @@ footer {visibility: hidden;}
     color: white;
     border-radius: 4px;
     border: none;
-    padding: 8px 16px;
 }
 
-/* Text area */
+/* Text Area */
 .stTextArea textarea {
     background-color: white;
     color: black;
@@ -80,8 +85,8 @@ footer {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- HEADER ----------------
-st.markdown('<div class="gmail-header">Email Spam Detection</div>', unsafe_allow_html=True)
+# ---------------- TOP BAR ----------------
+st.markdown('<div class="topbar">📧 Gmail - Spam Detection System</div>', unsafe_allow_html=True)
 
 # ---------------- NLTK ----------------
 nltk.download('punkt')
@@ -92,59 +97,61 @@ ps = PorterStemmer()
 def transform_text(text):
     text = text.lower()
     text = nltk.word_tokenize(text)
-
     y = []
     for i in text:
         if i.isalnum():
             y.append(i)
-
     text = y[:]
     y.clear()
-
     for i in text:
         if i not in stopwords.words('english') and i not in string.punctuation:
             y.append(i)
-
     text = y[:]
     y.clear()
-
     for i in text:
         y.append(ps.stem(i))
-
     return " ".join(y)
 
 # ---------------- LOAD MODEL ----------------
 tfidf = pickle.load(open('vectorizer.pkl', 'rb'))
 model = pickle.load(open('model.pkl', 'rb'))
 
-# ---------------- SESSION STATE ----------------
+# ---------------- SESSION ----------------
 if "inbox" not in st.session_state:
     st.session_state.inbox = []
 
 if "spam" not in st.session_state:
     st.session_state.spam = []
 
+if "active_tab" not in st.session_state:
+    st.session_state.active_tab = "Inbox"
+
 # ---------------- LAYOUT ----------------
 col1, col2 = st.columns([1, 4])
 
 # -------- LEFT SIDEBAR --------
 with col1:
-    st.markdown('<div class="sidebar-box">', unsafe_allow_html=True)
-    st.markdown(f'<div class="menu-item"><b>📥 Inbox ({len(st.session_state.inbox)})</b></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="menu-item"><b>🚫 Spam ({len(st.session_state.spam)})</b></div>', unsafe_allow_html=True)
+    st.markdown('<div class="sidebar">', unsafe_allow_html=True)
+    st.markdown('<div class="compose-btn">✏ Compose</div>', unsafe_allow_html=True)
+
+    if st.button("📥 Inbox"):
+        st.session_state.active_tab = "Inbox"
+
+    if st.button("🚫 Spam"):
+        st.session_state.active_tab = "Spam"
+
     st.markdown('</div>', unsafe_allow_html=True)
 
 # -------- MAIN CONTENT --------
 with col2:
 
-    st.subheader("Compose / Scan Email")
-    input_text = st.text_area("Enter email content", height=120)
+    # Compose / Scan section
+    st.subheader("Compose Email")
+    input_text = st.text_area("Write your email", height=120)
 
-    if st.button("Analyze"):
-        if input_text.strip() == "":
-            st.warning("Please enter email content.")
-        else:
-            with st.spinner("Analyzing..."):
+    if st.button("Send / Analyze"):
+        if input_text.strip() != "":
+            with st.spinner("Checking for spam..."):
                 time.sleep(1)
 
             transformed = transform_text(input_text)
@@ -156,12 +163,16 @@ with col2:
             else:
                 st.session_state.inbox.append(input_text)
 
-    # -------- DISPLAY INBOX --------
-    st.markdown("### Inbox")
-    for mail in st.session_state.inbox:
-        st.markdown(f'<div class="email-card">{mail}</div>', unsafe_allow_html=True)
+    st.markdown("---")
 
-    # -------- DISPLAY SPAM --------
-    st.markdown("### Spam")
-    for mail in st.session_state.spam:
-        st.markdown(f'<div class="email-card">{mail}</div>', unsafe_allow_html=True)
+    # Display selected tab
+    st.subheader(st.session_state.active_tab)
+
+    emails_to_show = (
+        st.session_state.inbox
+        if st.session_state.active_tab == "Inbox"
+        else st.session_state.spam
+    )
+
+    for mail in emails_to_show:
+        st.markdown(f'<div class="email-row">{mail}</div>', unsafe_allow_html=True)
