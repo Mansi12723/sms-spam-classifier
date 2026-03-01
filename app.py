@@ -27,19 +27,6 @@ st.markdown("""
 header {visibility: hidden;}
 footer {visibility: hidden;}
 
-/* Navbar */
-.navbar {
-    background: rgba(255,255,255,0.08);
-    padding: 18px 60px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 10px;
-    backdrop-filter: blur(10px);
-    font-size: 18px;
-    font-weight: 600;
-}
-
 /* Hero Section */
 .hero {
     text-align: center;
@@ -52,12 +39,6 @@ footer {visibility: hidden;}
     background: linear-gradient(90deg, #c084fc, #f0abfc);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-}
-
-.hero-subtitle {
-    font-size: 20px;
-    color: #ddd6fe;
-    margin-top: 10px;
 }
 
 /* Text Area */
@@ -101,7 +82,7 @@ footer {visibility: hidden;}
 st.markdown("""
 <div class="navbar">
 <div>🟣 SecureMail</div>
-<div>Home | Solutions | Contact</div>
+<div>Home | Contact</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -109,10 +90,7 @@ st.markdown("""
 st.markdown("""
 <div class="hero">
     <div class="hero-title">Email Spam Detection</div>
-    <div class="hero-subtitle">
-        This system intelligently analyzes email content and automatically classifies messages as spam or legitimate.
-    </div>
-</div>
+
 """, unsafe_allow_html=True)
 
 # ---------------- NLTK SETUP ----------------
@@ -185,4 +163,5 @@ st.markdown("""
 © 2026 SecureMail | Email Protection System
 </div>
 """, unsafe_allow_html=True)
+
 
