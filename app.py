@@ -7,88 +7,76 @@ from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 
 # ---------------- PAGE CONFIG ----------------
-st.set_page_config(page_title="Gmail Clone - Spam Detection", layout="wide")
+st.set_page_config(
+    page_title="Email Spam Detection",
+    page_icon="🟣",
+    layout="centered"
+)
 
-# ---------------- GMAIL CSS ----------------
+# ---------------- CSS ----------------
 st.markdown("""
 <style>
 
-/* Hide default */
+/* Full Purple Background */
+.stApp {
+    background: linear-gradient(135deg, #2e1065, #4c1d95);
+    color: white;
+}
+
+/* Hide default Streamlit header/footer */
 header {visibility: hidden;}
 footer {visibility: hidden;}
 
-/* Whole background */
-.stApp {
-    background-color: #f1f3f4;
-}
-
-/* Top Navbar */
-.topbar {
-    background: #ffffff;
-    padding: 12px 20px;
-    border-bottom: 1px solid #ddd;
-    font-size: 20px;
-    font-weight: 500;
-}
-
-/* Sidebar */
-.sidebar {
-    background: #ffffff;
-    height: 100vh;
-    padding: 15px;
-    border-right: 1px solid #ddd;
-}
-
-/* Compose Button */
-.compose-btn {
-    background: #c2e7ff;
-    padding: 10px;
-    border-radius: 20px;
+/* Heading Box */
+.title-box {
     text-align: center;
-    font-weight: 500;
-    margin-bottom: 20px;
+    padding: 30px;
+    border-radius: 15px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    margin-bottom: 40px;
+    border: 1px solid rgba(255,255,255,0.2);
 }
 
-/* Menu item */
-.menu-item {
-    padding: 10px;
-    font-size: 15px;
-    cursor: pointer;
-    border-radius: 20px;
-}
-
-.menu-item:hover {
-    background-color: #e8f0fe;
-}
-
-/* Email List */
-.email-row {
-    background: white;
-    padding: 12px;
-    border-bottom: 1px solid #eee;
+.title-text {
+    font-size: 48px;
+    font-weight: 800;
+    color: #e9d5ff;
 }
 
 /* Button */
 .stButton>button {
-    background-color: #1a73e8;
+    background: linear-gradient(90deg, #7c3aed, #a855f7);
     color: white;
-    border-radius: 4px;
+    font-size: 18px;
+    border-radius: 10px;
+    height: 3em;
+    width: 200px;
     border: none;
+}
+
+.stButton>button:hover {
+    transform: scale(1.05);
 }
 
 /* Text Area */
 .stTextArea textarea {
-    background-color: white;
-    color: black;
+    border-radius: 12px;
+    background-color: #1e1e2f;
+    color: white;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- TOP BAR ----------------
-st.markdown('<div class="topbar">📧 Gmail - Spam Detection System</div>', unsafe_allow_html=True)
+# ---------------- HEADING BOX ----------------
+st.markdown("""
+<div class="title-box">
+    <div class="title-text">Email Spam Detection</div>
+</div>
+""", unsafe_allow_html=True)
 
-# ---------------- NLTK ----------------
+# ---------------- NLTK SETUP ----------------
 nltk.download('punkt')
 nltk.download('stopwords')
 
@@ -97,82 +85,47 @@ ps = PorterStemmer()
 def transform_text(text):
     text = text.lower()
     text = nltk.word_tokenize(text)
+
     y = []
     for i in text:
         if i.isalnum():
             y.append(i)
+
     text = y[:]
     y.clear()
+
     for i in text:
         if i not in stopwords.words('english') and i not in string.punctuation:
             y.append(i)
+
     text = y[:]
     y.clear()
+
     for i in text:
         y.append(ps.stem(i))
+
     return " ".join(y)
 
 # ---------------- LOAD MODEL ----------------
 tfidf = pickle.load(open('vectorizer.pkl', 'rb'))
 model = pickle.load(open('model.pkl', 'rb'))
 
-# ---------------- SESSION ----------------
-if "inbox" not in st.session_state:
-    st.session_state.inbox = []
+# ---------------- SCAN SECTION ----------------
+st.subheader("Scan Email")
+input_text = st.text_area("Paste email content below:", height=200)
 
-if "spam" not in st.session_state:
-    st.session_state.spam = []
+if st.button("Analyze Email"):
+    if input_text.strip() == "":
+        st.warning("Please enter email content.")
+    else:
+        with st.spinner("Scanning..."):
+            time.sleep(1.5)
 
-if "active_tab" not in st.session_state:
-    st.session_state.active_tab = "Inbox"
+        transformed = transform_text(input_text)
+        vector_input = tfidf.transform([transformed])
+        result = model.predict(vector_input)[0]
 
-# ---------------- LAYOUT ----------------
-col1, col2 = st.columns([1, 4])
-
-# -------- LEFT SIDEBAR --------
-with col1:
-    st.markdown('<div class="sidebar">', unsafe_allow_html=True)
-    st.markdown('<div class="compose-btn">✏ Compose</div>', unsafe_allow_html=True)
-
-    if st.button("📥 Inbox"):
-        st.session_state.active_tab = "Inbox"
-
-    if st.button("🚫 Spam"):
-        st.session_state.active_tab = "Spam"
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# -------- MAIN CONTENT --------
-with col2:
-
-    # Compose / Scan section
-    st.subheader("Compose Email")
-    input_text = st.text_area("Write your email", height=120)
-
-    if st.button("Send / Analyze"):
-        if input_text.strip() != "":
-            with st.spinner("Checking for spam..."):
-                time.sleep(1)
-
-            transformed = transform_text(input_text)
-            vector_input = tfidf.transform([transformed])
-            result = model.predict(vector_input)[0]
-
-            if result == 1:
-                st.session_state.spam.append(input_text)
-            else:
-                st.session_state.inbox.append(input_text)
-
-    st.markdown("---")
-
-    # Display selected tab
-    st.subheader(st.session_state.active_tab)
-
-    emails_to_show = (
-        st.session_state.inbox
-        if st.session_state.active_tab == "Inbox"
-        else st.session_state.spam
-    )
-
-    for mail in emails_to_show:
-        st.markdown(f'<div class="email-row">{mail}</div>', unsafe_allow_html=True)
+        if result == 1:
+            st.error("⚠ Spam Email Detected")
+        else:
+            st.success("✔ Legitimate Email")
