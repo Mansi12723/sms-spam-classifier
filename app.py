@@ -60,16 +60,6 @@ footer {visibility: hidden;}
     margin-top: 10px;
 }
 
-/* Card */
-.card {
-    background: rgba(255,255,255,0.08);
-    padding: 45px;
-    border-radius: 20px;
-    backdrop-filter: blur(15px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    border: 1px solid rgba(255,255,255,0.15);
-}
-
 /* Text Area */
 .stTextArea textarea {
     border-radius: 12px;
@@ -195,3 +185,4 @@ st.markdown("""
 © 2026 SecureMail | Email Protection System
 </div>
 """, unsafe_allow_html=True)
+
