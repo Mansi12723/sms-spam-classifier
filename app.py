@@ -8,7 +8,7 @@ from nltk.stem.porter import PorterStemmer
 
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(
-    page_title="SecureMail",
+    page_title="Email Spam Detection",
     page_icon="🟣",
     layout="wide"
 )
@@ -17,13 +17,13 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-/* Full Page Purple Gradient Background */
+/* Full Page Purple Gradient */
 .stApp {
     background: linear-gradient(135deg, #1a0b2e, #2e1065, #4c1d95);
     color: white;
 }
 
-/* Hide default Streamlit header/footer */
+/* Hide Streamlit header/footer */
 header {visibility: hidden;}
 footer {visibility: hidden;}
 
@@ -43,11 +43,11 @@ footer {visibility: hidden;}
 /* Hero Section */
 .hero {
     text-align: center;
-    padding: 70px 20px;
+    padding: 80px 20px 40px 20px;
 }
 
 .hero-title {
-    font-size: 58px;
+    font-size: 56px;
     font-weight: 900;
     background: linear-gradient(90deg, #c084fc, #f0abfc);
     -webkit-background-clip: text;
@@ -112,15 +112,17 @@ footer {visibility: hidden;}
 st.markdown("""
 <div class="navbar">
 <div>🟣 SecureMail</div>
-<div>Home | Solutions | Enterprise | Contact</div>
+<div>Home | Solutions | Contact</div>
 </div>
 """, unsafe_allow_html=True)
 
-# ---------------- HERO ----------------
+# ---------------- HERO SECTION ----------------
 st.markdown("""
 <div class="hero">
-<div class="hero-title">Enterprise Email Protection</div>
-<div class="hero-subtitle">Powerful spam detection & secure communication</div>
+<div class="hero-title">Email Spam Detection</div>
+<div class="hero-subtitle">
+This system intelligently analyzes email content and automatically classifies messages as spam or legitimate.
+</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -183,15 +185,15 @@ with col2:
             st.markdown("### Result")
 
             if result == 1:
-                st.error(f"Spam Detected (Confidence: {confidence}%)")
+                st.error(f"⚠ Spam Email Detected ({confidence}% confidence)")
             else:
-                st.success(f"Email is Safe (Confidence: {confidence}%)")
+                st.success(f"✔ Legitimate Email ({confidence}% confidence)")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------- FOOTER ----------------
 st.markdown("""
 <div class="footer">
-© 2026 SecureMail | Advanced Cyber Protection
+© 2026 SecureMail | Email Protection System
 </div>
 """, unsafe_allow_html=True)
