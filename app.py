@@ -128,4 +128,5 @@ if st.button("Analyze Email"):
         if result == 1:
             st.error("⚠ Spam Email Detected")
         else:
-            st.success("✔ Legitimate Email")
+            st.success("✔ Not Spam Email")
+
