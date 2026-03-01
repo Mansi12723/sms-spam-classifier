@@ -17,13 +17,13 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-/* Full Page Purple Gradient */
+/* Full Background */
 .stApp {
     background: linear-gradient(135deg, #1a0b2e, #2e1065, #4c1d95);
     color: white;
 }
 
-/* Hide Streamlit header/footer */
+/* Hide Streamlit default header/footer */
 header {visibility: hidden;}
 footer {visibility: hidden;}
 
@@ -43,7 +43,7 @@ footer {visibility: hidden;}
 /* Hero Section */
 .hero {
     text-align: center;
-    padding: 80px 20px 40px 20px;
+    padding: 80px 20px 30px 20px;
 }
 
 .hero-title {
@@ -97,7 +97,6 @@ footer {visibility: hidden;}
     box-shadow: 0 0 20px #c084fc;
 }
 
-/* Footer */
 .footer {
     text-align: center;
     color: #c4b5fd;
@@ -119,14 +118,14 @@ st.markdown("""
 # ---------------- HERO SECTION ----------------
 st.markdown("""
 <div class="hero">
-<div class="hero-title">Email Spam Detection</div>
-<div class="hero-subtitle">
-This system intelligently analyzes email content and automatically classifies messages as spam or legitimate.
-</div>
+    <div class="hero-title">Email Spam Detection</div>
+    <div class="hero-subtitle">
+        This system intelligently analyzes email content and automatically classifies messages as spam or legitimate.
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
-# ---------------- NLTK ----------------
+# ---------------- NLTK SETUP ----------------
 nltk.download('punkt')
 nltk.download('stopwords')
 
@@ -160,14 +159,13 @@ def transform_text(text):
 tfidf = pickle.load(open('vectorizer.pkl', 'rb'))
 model = pickle.load(open('model.pkl', 'rb'))
 
-# ---------------- CENTER CONTENT ----------------
+# ---------------- CENTER CARD ----------------
 col1, col2, col3 = st.columns([1,2,1])
 
 with col2:
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     st.subheader("Scan Email")
-
     input_text = st.text_area("Paste email content below:", height=200)
 
     if st.button("Analyze Email"):
